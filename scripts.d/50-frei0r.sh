@@ -1,5 +1,7 @@
 #!/bin/bash
-
+ffbuild_enabled() {
+    return 1
+}
 SCRIPT_REPO="https://github.com/dyne/frei0r.git"
 SCRIPT_COMMIT="6d272815f25baa6daafacdd132a43e36a94ff21c"
 
