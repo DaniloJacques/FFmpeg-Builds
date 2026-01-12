@@ -1,14 +1,10 @@
 #!/bin/bash
-ffbuild_enabled() {
-    return 1
-}
-SCRIPT_REPO="https://github.com/dyne/frei0r.git"
+
+SCRIPT_REPO="https://github.com/dyne/frei0r.gitaaa"
 SCRIPT_COMMIT="6d272815f25baa6daafacdd132a43e36a94ff21c"
 
 ffbuild_enabled() {
-    [[ $VARIANT == lgpl* ]] && return -1
-    (( $(ffbuild_ffver) >= 500 )) || return -1
-    return 0
+    return 1
 }
 
 ffbuild_dockerfinal() {
