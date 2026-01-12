@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_REPO="https://github.com/dyne/frei0r.gitaaa"
+SCRIPT_REPO="https://github.com/dyne/frei0r.git"
 SCRIPT_COMMIT="6d272815f25baa6daafacdd132a43e36a94ff21c"
 
 ffbuild_enabled() {
@@ -21,7 +21,7 @@ ffbuild_dockerbuild() {
 }
 
 ffbuild_configure() {
-    echo --enable-frei0r
+    echo --disable-frei0r
 }
 
 ffbuild_unconfigure() {
