@@ -25,7 +25,7 @@ ffbuild_dockerbuild() {
 }
 
 ffbuild_configure() {
-    echo --enable-frei0r
+    echo --disable-frei0r
 }
 
 ffbuild_unconfigure() {
