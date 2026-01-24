@@ -303,14 +303,50 @@ jobs:
           NAME="x86-64v3 Optimized Build ($RELDATE)"
           TAGNAME="latest-x86-64v3"
           (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
+          
+          # Create release notes
+          cat > release_notes.md << 'EOF'
+          ## 🚀 x86-64-v3 Optimized FFmpeg Build
+          
+          This build is optimized for **x86-64-v3** microarchitecture level, providing better performance than generic builds.
+          
+          ### 📋 What is x86-64-v3?
+          
+          x86-64-v3 is a CPU feature level that includes:
+          - **AVX2** - 256-bit vector operations
+          - **BMI1/BMI2** - Bit manipulation instructions
+          - **FMA** - Fused multiply-add operations
+          - **MOVBE** - Move data after byte swap
+          - **LZCNT/POPCNT** - Count leading zeros / population count
+          
+          ### ✅ Compatible Processors
+          
+          | Vendor | Minimum Architecture | Year |
+          |--------|---------------------|------|
+          | **Intel** | Haswell (4th Gen) | 2013+ |
+          | **AMD** | Excavator / Zen | 2015+ |
+          
+          > ⚠️ **Note:** If your CPU is older than 2013 (Intel) or 2015 (AMD), use the standard x86-64 build instead.
+          
+          ### 🛠️ Build Optimizations
+          
+          - Compiler flags: `-march=x86-64-v3 -mtune=generic -O3 -pipe`
+          - Uses FFmpeg with hardware acceleration support
+          - Includes non-free codecs (if nonfree variant)
+          
+          ---
+          *Built by [jogadann-optimized](https://github.com/DaniloJacques/FFmpeg-Builds)*
+          EOF
+          
           gh release delete --cleanup-tag --yes "$TAGNAME" || true
           sleep 5
-          gh release create "$TAGNAME" --target "x86_64v3" --title "$NAME" artifacts/*.{zip,tar.xz} artifacts/checksums.*
+          gh release create "$TAGNAME" --target "x86_64v3" --title "$NAME" --notes-file release_notes.md artifacts/*.{zip,tar.xz} artifacts/checksums.*
           echo "tag_name=${TAGNAME}" >> $GITHUB_OUTPUT
           echo "rel_date=${RELDATE}" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Update Wiki
+        continue-on-error: true
         run: ./util/update_wiki.sh artifacts ${{ steps.create_release.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
