@@ -1,5 +1,5 @@
 FF_CONFIGURE="--enable-gpl --enable-version3 --disable-debug"
-FF_CFLAGS="-march=x86-64-v3 -O3"
+FF_CFLAGS="-march=tigerlake -O3"
 FF_CXXFLAGS="-march=tigerlake -O3"
 FF_LDFLAGS=""
 GIT_BRANCH="master"

@@ -2,6 +2,8 @@ name: Build FFmpeg
 
 on:
   push:
+    branches:
+      - x86_64v3
     paths-ignore:
       - '**.md'
       - 'LICENSE'
