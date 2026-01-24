@@ -1,13 +1,37 @@
-# FFmpeg Static Auto-Builds
+# FFmpeg Static Auto-Builds (Optimized Fork)
+
+> 🚀 **Optimized builds for modern CPUs** - Fork of [MartinEesmaa/FFmpeg-Builds](https://github.com/MartinEesmaa/FFmpeg-Builds)
 
 Static Windows (x86_64) and Linux (x86_64) Builds of ffmpeg master and latest release branch.
 
-Windows builds are targetting Windows 7 and newer, provided UCRT is installed.
+Windows builds are targeting Windows 7 and newer, provided UCRT is installed.
 The minimum supported version is Windows 10 22H2, no guarantees on anything older.
 
-Linux builds are targetting RHEL/CentOS 8 (glibc-2.28 + linux-4.18) and anything more recent.
+Linux builds are targeting RHEL/CentOS 8 (glibc-2.28 + linux-4.18) and anything more recent.
 
-Sometimes rarely I had to manually fix older compatibility issues like Windows from coming external features.
+---
+
+## 🎯 Optimized Builds (This Fork)
+
+This fork provides **architecture-optimized builds** that can be **5-15% faster** than generic builds.
+
+### Available Optimized Versions
+
+| Branch | Target CPU | Compiler Flags | Compatible CPUs |
+|--------|------------|----------------|-----------------|
+| **[x86_64v3](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-x86-64v3)** | Generic modern | `-march=x86-64-v3 -mtune=generic -O3 -pipe` | Intel Haswell+ (2013), AMD Zen+ (2015) |
+| **[zen3](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-zen3)** | AMD Zen 3 | `-march=znver3 -mtune=znver3 -O3 -pipe` | AMD Ryzen 5000, EPYC 7003 |
+| **[tigerlake](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-tigerlake)** | Intel Tiger Lake | `-march=tigerlake -mtune=tigerlake -O3 -pipe` | Intel 11th Gen (mobile) |
+
+### x86-64-v3 Instructions Enabled
+- **AVX2** - 256-bit vector operations
+- **BMI1/BMI2** - Bit manipulation instructions  
+- **FMA** - Fused multiply-add
+- **MOVBE, LZCNT, POPCNT**
+
+> ⚠️ **Note:** If your CPU is older than 2013 (Intel) or 2015 (AMD), use the original [MartinEesmaa](https://github.com/MartinEesmaa/FFmpeg-Builds) or [BtbN](https://github.com/BtbN/FFmpeg-Builds) builds.
+
+---
 
 ## Features of Martin Eesmaa's custom FFmpeg automated builds
 
@@ -39,6 +63,10 @@ Old features or some errors due to compilation or/and limited which didn't fit:
 * `libsmbclient` - Too complicated for to install little bit, later...
 * `libmpeghdec` - Only Windows & Linux 64-bit architectures works, but others are not working due to error compilations.
 
+---
+
+## Apple AudioToolbox AAC Encoder (aac_at)
+
 For AudioToolbox encoder, it is only Windows support.
 
 Two choices for to install [iTunes](https://www.apple.com/itunes/) or use portable DLL files from iTunes without installed which is called [QTFiles](https://github.com/AnimMouse/QTFiles).
@@ -58,6 +86,8 @@ CoreAudioToolbox.dll libdispatch.dll CoreFoundation.dll objc.dll libicuin.dll AS
 ```
 
 **Hint:** You can copy these DLL files from iTunes right next to qaac.exe or/and ffmpeg.exe.
+
+---
 
 ## Fraunhofer IIS MPEG-H decoder
 
@@ -80,11 +110,13 @@ ffmpeg_vvceasy -channel_layout stereo -i MHM.mp4 MHM.wav
 
 See the more info of manual standard channel layouts [here](https://trac.ffmpeg.org/wiki/AudioChannelManipulation#Listchannelnamesandstandardchannellayouts).
 
+---
+
 ## Auto-Builds
 
 Builds run daily at 12:00 UTC (or GitHubs idea of that time) and are automatically released on success.
 
-**Auto-Builds run ONLY for win32, win(arm)64 and linux(arm)64. There is no linux 32-bit auto-builds, I will try to add support linux 32-bit support**
+**Auto-Builds run ONLY for win64 and linux64 in this fork.**
 
 ### Release Retention Policy
 
@@ -92,10 +124,14 @@ Builds run daily at 12:00 UTC (or GitHubs idea of that time) and are automatical
 - The last 14 daily builds are kept.
 - The special "latest" build floats and provides consistent URLs always pointing to the latest build.
 
+---
+
 ## Package List
 
 For a list of included dependencies check the scripts.d directory.
 Every file corresponds to its respective package.
+
+---
 
 ## How to make a build
 
@@ -139,3 +175,11 @@ All of those can be optionally combined with any combination of addins:
 * `4.4`/`5.0`/`5.1`/`6.0`/`6.1`/`7.0`/`7.1` to build from the respective release branch instead of master.
 * `debug` to not strip debug symbols from the binaries. This increases the output size by about 250MB.
 * `lto` build all dependencies and ffmpeg with -flto=auto (HIGHLY EXPERIMENTAL, broken for Windows, sometimes works for Linux)
+
+---
+
+## Credits
+
+- **Upstream:** [MartinEesmaa/FFmpeg-Builds](https://github.com/MartinEesmaa/FFmpeg-Builds)
+- **Original:** [BtbN/FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds)
+- **FFmpeg:** [ffmpeg.org](https://ffmpeg.org)
