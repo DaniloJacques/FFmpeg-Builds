@@ -103,9 +103,9 @@ For example, ensure to have MediaInfo for audio channels count:
 
 ```
 # Mono audio channel file
-ffmpeg_vvceasy -channel_layout mono -i MHM.mp4 MHM.wav
+ffmpeg -channel_layout mono -i MHM.mp4 MHM.wav
 # Stereo audio channel file
-ffmpeg_vvceasy -channel_layout stereo -i MHM.mp4 MHM.wav
+ffmpeg -channel_layout stereo -i MHM.mp4 MHM.wav
 ```
 
 See the more info of manual standard channel layouts [here](https://trac.ffmpeg.org/wiki/AudioChannelManipulation#Listchannelnamesandstandardchannellayouts).
