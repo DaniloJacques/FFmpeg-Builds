@@ -1,6 +1,6 @@
 FF_CONFIGURE="--enable-gpl --enable-version3 --disable-debug"
-FF_CFLAGS="-march=znver3 -O3"
-FF_CXXFLAGS="-march=znver3 -O3"
+FF_CFLAGS="-march=znver3 -mtune=znver3 -O3 -pipe"
+FF_CXXFLAGS="-march=znver3 -mtune=znver3 -O3 -pipe"
 FF_LDFLAGS=""
 GIT_BRANCH="master"
 LICENSE_FILE="COPYING.GPLv3"
