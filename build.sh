@@ -40,7 +40,7 @@ cat <<EOF >"$BUILD_SCRIPT"
         --extra-cflags="\$FF_CFLAGS" --extra-cxxflags="\$FF_CXXFLAGS" --extra-libs="\$FF_LIBS" \
         --extra-ldflags="\$FF_LDFLAGS" --extra-ldexeflags="\$FF_LDEXEFLAGS" \
         --cc="\$CC" --cxx="\$CXX" --ar="\$AR" --ranlib="\$RANLIB" --nm="\$NM" \
-        --extra-version="VVCEasy"
+        --extra-version="jogadann-optimized"
     make -j\$(nproc) V=1
     make install install-doc
 EOF
@@ -59,7 +59,7 @@ fi
 
 mkdir -p artifacts
 ARTIFACTS_PATH="$PWD/artifacts"
-BUILD_NAME="ffmpeg_vvceasy-$(./ffbuild/ffmpeg/ffbuild/version.sh ffbuild/ffmpeg)-${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}"
+BUILD_NAME="ffmpeg_jogadann-optimized-x86-64v3-$(./ffbuild/ffmpeg/ffbuild/version.sh ffbuild/ffmpeg)-${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}"
 
 mkdir -p "ffbuild/pkgroot/$BUILD_NAME"
 package_variant ffbuild/prefix "ffbuild/pkgroot/$BUILD_NAME"
@@ -68,10 +68,7 @@ package_variant ffbuild/prefix "ffbuild/pkgroot/$BUILD_NAME"
 
 cd ffbuild/pkgroot
 
-for bin in ffmpeg ffprobe ffplay; do
-    [[ -f ./$BUILD_NAME/bin/$bin.exe ]] && mv ./$BUILD_NAME/bin/$bin.exe ./$BUILD_NAME/bin/${bin}_vvceasy.exe
-    [[ -f ./$BUILD_NAME/bin/$bin ]] && mv ./$BUILD_NAME/bin/$bin ./$BUILD_NAME/bin/${bin}_vvceasy
-done
+# Executáveis mantidos como ffmpeg, ffprobe, ffplay (sem sufixo)
 
 if [[ "${TARGET}" == win* ]]; then
     OUTPUT_FNAME="${BUILD_NAME}.zip"
