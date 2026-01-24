@@ -3,7 +3,7 @@ name: Build FFmpeg
 on:
   push:
     branches:
-      - x86_64v3
+      - zen3
     paths-ignore:
       - '**.md'
       - 'LICENSE'
@@ -275,12 +275,12 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg_vvceasy-${{ steps.strs.outputs.artifact_slug }}
+          name: ffmpeg_jogadann-${{ steps.strs.outputs.artifact_slug }}
           overwrite: true
           path: artifacts/*
   publish_release:
     name: Publish release
-    if: ${{ !cancelled() && ( github.event_name == 'schedule' || github.event.inputs.doRelease == 'true' ) && needs.build_ffmpeg.result == 'success' }}
+    if: ${{ !cancelled() && needs.build_ffmpeg.result == 'success' }}
     needs: build_ffmpeg
     runs-on: ubuntu-latest
     steps:
@@ -291,35 +291,23 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: ffmpeg_vvceasy-*
+          pattern: ffmpeg_jogadann-*
           merge-multiple: true
           path: artifacts
-      - name: Create release
+      - name: Update Latest Release
         id: create_release
         run: |
           set -xe
           shopt -s nullglob
           RELDATE="$(date +'%Y-%m-%d %H:%M')"
-          NAME="Auto-Build $RELDATE"
-          TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')"
+          NAME="Zen3 (Ryzen 5000) Optimized Build ($RELDATE)"
+          TAGNAME="latest-zen3"
           (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
-          gh release create "$TAGNAME" --target "master" --title "$NAME" artifacts/*.{zip,tar.xz} artifacts/checksums.*
+          gh release delete --cleanup-tag --yes "$TAGNAME" || true
+          sleep 5
+          gh release create "$TAGNAME" --target "zen3" --title "$NAME" artifacts/*.{zip,tar.xz} artifacts/checksums.*
           echo "tag_name=${TAGNAME}" >> $GITHUB_OUTPUT
           echo "rel_date=${RELDATE}" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Update Latest
-        run: |
-          set -xe
-          shopt -s nullglob
-          mkdir latest_artifacts
-          ./util/repack_latest.sh latest_artifacts artifacts/*.{zip,tar.xz}
-          (cd latest_artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
-          NAME="Latest Auto-Build (${{ steps.create_release.outputs.rel_date }})"
-          TAGNAME="latest"
-          gh release delete --cleanup-tag --yes "$TAGNAME" || true
-          sleep 15
-          gh release create "$TAGNAME" --target "master" --title "$NAME" latest_artifacts/*
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Update Wiki
