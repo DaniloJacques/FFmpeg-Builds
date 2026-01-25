@@ -29,6 +29,20 @@ This fork provides **architecture-optimized builds** that can be **5-15% faster*
 - **FMA** - Fused multiply-add
 - **MOVBE, LZCNT, POPCNT**
 
+### Zen3 (AMD Ryzen 5000) Instructions Enabled
+- **All x86-64-v3 features** plus:
+- **AVX2** optimized for Zen 3 architecture
+- **VAES/VPCLMULQDQ** - Vectorized AES/CLMUL
+- **SHA** - Hardware SHA instructions
+- **Improved branch prediction** tuning
+
+### Tiger Lake (Intel 11th Gen) Instructions Enabled
+- **All x86-64-v3 features** plus:
+- **AVX-512** (F, CD, BW, DQ, VL, VBMI, VBMI2, VNNI, BITALG, VPOPCNTDQ, VP2INTERSECT)
+- **GFNI** - Galois Field instructions
+- **VAES/VPCLMULQDQ** - Vectorized AES/CLMUL
+- **Improved crypto performance**
+
 > ⚠️ **Note:** If your CPU is older than 2013 (Intel) or 2015 (AMD), use the original [MartinEesmaa](https://github.com/MartinEesmaa/FFmpeg-Builds) or [BtbN](https://github.com/BtbN/FFmpeg-Builds) builds.
 
 ---
