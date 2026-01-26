@@ -275,7 +275,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-zen3-${{ steps.strs.outputs.artifact_slug }}
+          name: ffmpeg-optimized-zen3-${{ steps.strs.outputs.artifact_slug }}
           overwrite: true
           path: artifacts/*
   publish_release:
@@ -291,7 +291,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: ffmpeg-zen3-*
+          pattern: ffmpeg-optimized-zen3-*
           merge-multiple: true
           path: artifacts
       - name: Update Latest Release
