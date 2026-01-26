@@ -275,7 +275,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg_jogadann-${{ steps.strs.outputs.artifact_slug }}
+          name: ffmpeg-zen3-${{ steps.strs.outputs.artifact_slug }}
           overwrite: true
           path: artifacts/*
   publish_release:
@@ -291,7 +291,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: ffmpeg_jogadann-*
+          pattern: ffmpeg-zen3-*
           merge-multiple: true
           path: artifacts
       - name: Update Latest Release
@@ -303,9 +303,35 @@ jobs:
           NAME="Zen3 (Ryzen 5000) Optimized Build ($RELDATE)"
           TAGNAME="latest-zen3"
           (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
+          
+          # Create release notes
+          cat > release_notes.md << 'EOF'
+          ## 🚀 Zen3 (AMD Ryzen 5000) Optimized FFmpeg Build
+          
+          This build is optimized for **AMD Zen 3** processors (Ryzen 5000 / EPYC 7003).
+          
+          ### 📝 Features
+          - **AVX2** optimized for Zen 3 pipeline
+          - **VAES/VPCLMULQDQ** - Vectorized AES/CLMUL
+          - **SHA** - Hardware SHA instructions
+          - Tuned for Zen 3 branch prediction and cache hierarchy
+          
+          ---
+          
+          ### 🔗 Other Optimized Builds
+          
+          | Build | Target CPU | Link |
+          |-------|------------|------|
+          | **x86-64v3** | Generic Modern (Haswell+) | [latest-x86-64v3](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-x86-64v3) |
+          | **Tiger Lake** | Intel 11th Gen (mobile) | [latest-tigerlake](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-tigerlake) |
+          
+          ---
+          *Built by [jogadann-optimized](https://github.com/DaniloJacques/FFmpeg-Builds)*
+          EOF
+          
           gh release delete --cleanup-tag --yes "$TAGNAME" || true
           sleep 5
-          gh release create "$TAGNAME" --target "zen3" --title "$NAME" artifacts/*.{zip,tar.xz} artifacts/checksums.*
+          gh release create "$TAGNAME" --target "zen3" --title "$NAME" --notes-file release_notes.md artifacts/*.{zip,tar.xz} artifacts/checksums.*
           echo "tag_name=${TAGNAME}" >> $GITHUB_OUTPUT
           echo "rel_date=${RELDATE}" >> $GITHUB_OUTPUT
         env:
