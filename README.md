@@ -38,6 +38,7 @@ Old features or some errors due to compilation or/and limited which didn't fit:
 * `libklvanc` - Windows build failed to compile, but Linux works and it is not yet enabled until DeckLick Linux feature is available.
 * `libsmbclient` - Too complicated for to install little bit, later...
 * `libmpeghdec` - Only Windows & Linux 64-bit architectures works, but others are not working due to error compilations.
+* `librav1e` - **Disabled for Linux builds on Tiger Lake branch** - Rust build scripts require native CPU execution, but GitHub Actions runners don't have Tiger Lake CPUs (causes SIGILL). Windows builds include rav1e normally.
 
 For AudioToolbox encoder, it is only Windows support.
 
