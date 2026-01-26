@@ -60,7 +60,7 @@ fi
 mkdir -p artifacts
 ARTIFACTS_PATH="$PWD/artifacts"
 BUILD_DATE=$(date +%Y-%m-%d)
-BUILD_NAME="ffmpeg-tigerlake-${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}-${BUILD_DATE}"
+BUILD_NAME="ffmpeg-optimized-tigerlake-${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}-${BUILD_DATE}"
 
 mkdir -p "ffbuild/pkgroot/$BUILD_NAME"
 package_variant ffbuild/prefix "ffbuild/pkgroot/$BUILD_NAME"
