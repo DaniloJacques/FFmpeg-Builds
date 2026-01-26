@@ -275,7 +275,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg_jogadann-${{ steps.strs.outputs.artifact_slug }}
+          name: ffmpeg-x86-64v3-${{ steps.strs.outputs.artifact_slug }}
           overwrite: true
           path: artifacts/*
   publish_release:
@@ -291,7 +291,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: ffmpeg_jogadann-*
+          pattern: ffmpeg-x86-64v3-*
           merge-multiple: true
           path: artifacts
       - name: Update Latest Release
@@ -333,6 +333,15 @@ jobs:
           - Compiler flags: `-march=x86-64-v3 -mtune=generic -O3 -pipe`
           - Uses FFmpeg with hardware acceleration support
           - Includes non-free codecs (if nonfree variant)
+          
+          ---
+          
+          ### 🔗 Other Optimized Builds
+          
+          | Build | Target CPU | Link |
+          |-------|------------|------|
+          | **Zen3** | AMD Ryzen 5000 / EPYC 7003 | [latest-zen3](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-zen3) |
+          | **Tiger Lake** | Intel 11th Gen (mobile) | [latest-tigerlake](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-tigerlake) |
           
           ---
           *Built by [jogadann-optimized](https://github.com/DaniloJacques/FFmpeg-Builds)*
