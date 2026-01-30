@@ -268,8 +268,6 @@ jobs:
           T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
           ./build.sh ${{ matrix.target }} ${{ matrix.variant }}
         env:
-          CC: gcc-14
-          CXX: g++-14
           FF_CFLAGS: -march=tigerlake -mtune=tigerlake -O3
           FF_CXXFLAGS: -march=tigerlake -mtune=tigerlake -O3
           CPU_ARCH: tigerlake
