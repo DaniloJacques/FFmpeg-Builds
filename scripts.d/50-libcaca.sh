@@ -11,9 +11,6 @@ ffbuild_enabled() {
 ffbuild_dockerbuild() {
     ./bootstrap
 
-    # GCC 14 treats implicit function declarations as errors
-    export CFLAGS="$CFLAGS -Wno-error=implicit-function-declaration -Wno-error=int-conversion"
-
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
         --host="$FFBUILD_TOOLCHAIN"
