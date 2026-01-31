@@ -267,6 +267,8 @@ jobs:
         run: |
           T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
           ./build.sh ${{ matrix.target }} ${{ matrix.variant }}
+        env:
+          CPU_ARCH: zen3
       - name: Replace spaces in string
         id: strs
         run: |
@@ -300,21 +302,21 @@ jobs:
           set -xe
           shopt -s nullglob
           RELDATE="$(date +'%Y-%m-%d %H:%M')"
-          NAME="Zen3 (Ryzen 5000) Optimized Build ($RELDATE)"
+          NAME="Zen 3 (Ryzen 5000/EPYC) Optimized Build ($RELDATE)"
           TAGNAME="latest-zen3"
           (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
           
           # Create release notes
           cat > release_notes.md << 'EOF'
-          ## 🚀 Zen3 (AMD Ryzen 5000) Optimized FFmpeg Build
+          ## 🚀 Zen 3 (Ryzen 5000) Optimized FFmpeg Build
           
-          This build is optimized for **AMD Zen 3** processors (Ryzen 5000 / EPYC 7003).
+          This build is optimized for **AMD Zen 3** processors (Ryzen 5000, EPYC 7003).
           
           ### 📝 Features
-          - **AVX2** optimized for Zen 3 pipeline
-          - **VAES/VPCLMULQDQ** - Vectorized AES/CLMUL
-          - **SHA** - Hardware SHA instructions
-          - Tuned for Zen 3 branch prediction and cache hierarchy
+          - **AVX2** (Optimized for Zen 3 pipeline)
+          - **FMA3, BMI2**
+          
+          > ⚠️ **Linux Note:** `librav1e` is disabled due to Rust build limitations on GitHub Actions.
           
           ---
           

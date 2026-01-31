@@ -37,9 +37,9 @@ cat <<EOF >"$BUILD_SCRIPT"
     chmod +x configure
 
     ./configure --prefix=/ffbuild/prefix --pkg-config-flags="--static" \$FFBUILD_TARGET_FLAGS \$FF_CONFIGURE \
-        --extra-cflags="\$FF_CFLAGS" --extra-cxxflags="\$FF_CXXFLAGS" --extra-libs="\$FF_LIBS" \
-        --extra-ldflags="\$FF_LDFLAGS" --extra-ldexeflags="\$FF_LDEXEFLAGS" \
-        --cc="\$CC" --cxx="\$CXX" --ar="\$AR" --ranlib="\$RANLIB" --nm="\$NM" \
+        --extra-cflags="\$FF_CFLAGS ${FF_CFLAGS}" --extra-cxxflags="\$FF_CXXFLAGS ${FF_CXXFLAGS}" --extra-libs="\$FF_LIBS ${FF_LIBS}" \
+        --extra-ldflags="\$FF_LDFLAGS ${FF_LDFLAGS}" --extra-ldexeflags="\$FF_LDEXEFLAGS ${FF_LDEXEFLAGS}" \
+        --cc="${CC:-\$CC}" --cxx="${CXX:-\$CXX}" --ar="${AR:-\$AR}" --ranlib="${RANLIB:-\$RANLIB}" --nm="${NM:-\$NM}" \
         --extra-version="jogadann-optimized"
     make -j\$(nproc) V=1
     make install install-doc
@@ -60,7 +60,7 @@ fi
 mkdir -p artifacts
 ARTIFACTS_PATH="$PWD/artifacts"
 BUILD_DATE=$(date +%Y-%m-%d)
-BUILD_NAME="ffmpeg-optimized-zen3-${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}-${BUILD_DATE}"
+BUILD_NAME="ffmpeg-optimized-${CPU_ARCH:-tigerlake}-${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}-${BUILD_DATE}"
 
 mkdir -p "ffbuild/pkgroot/$BUILD_NAME"
 package_variant ffbuild/prefix "ffbuild/pkgroot/$BUILD_NAME"
