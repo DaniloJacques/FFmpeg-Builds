@@ -36,7 +36,7 @@ cat <<EOF >"$BUILD_SCRIPT"
     cd ffmpeg
     chmod +x configure
 
-    ./configure --prefix=/ffbuild/prefix --pkg-config-flags="--static" \$FFBUILD_TARGET_FLAGS \$FF_CONFIGURE \
+    ./configure --prefix=/ffbuild/prefix --pkg-config-flags="--static" \$FFBUILD_TARGET_FLAGS \$FF_CONFIGURE ${FF_CONFIGURE} \
         --extra-cflags="\$FF_CFLAGS ${FF_CFLAGS}" --extra-cxxflags="\$FF_CXXFLAGS ${FF_CXXFLAGS}" --extra-libs="\$FF_LIBS ${FF_LIBS}" \
         --extra-ldflags="\$FF_LDFLAGS ${FF_LDFLAGS}" --extra-ldexeflags="\$FF_LDEXEFLAGS ${FF_LDEXEFLAGS}" \
         --cc="${CC:-\$CC}" --cxx="${CXX:-\$CXX}" --ar="${AR:-\$AR}" --ranlib="${RANLIB:-\$RANLIB}" --nm="${NM:-\$NM}" \

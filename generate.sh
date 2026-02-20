@@ -117,7 +117,15 @@ get_output() {
     )
 }
 
-source "variants/${TARGET}-${VARIANT}.sh"
+# Não enviamos as flags do variant para o container Docker base,
+# para permitir o reaproveitamento entre diferentes branches (Zen3, Tigerlake).
+# O `build.sh` fará a inclusão das flags do variant no momento da compilação.
+FF_CONFIGURE=""
+FF_CFLAGS=""
+FF_CXXFLAGS=""
+FF_LDFLAGS=""
+FF_LDEXEFLAGS=""
+FF_LIBS=""
 
 for addin in ${ADDINS[*]}; do
     source "addins/${addin}.sh"
