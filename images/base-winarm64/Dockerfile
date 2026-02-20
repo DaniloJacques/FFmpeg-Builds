@@ -1,5 +1,6 @@
 ARG GH_REPO=ghcr.io/martineesmaa/ffmpeg-builds
-FROM $GH_REPO/base:latest
+ARG TAG=latest
+FROM $GH_REPO/base:$TAG
 
 RUN \
     git clone --filter=blob:none https://github.com/mstorsjo/llvm-mingw /llvm-mingw && cd /llvm-mingw && \

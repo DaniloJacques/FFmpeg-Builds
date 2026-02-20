@@ -33,9 +33,12 @@ done
 REPO="${GITHUB_REPOSITORY:-danilojacques/ffmpeg-builds}"
 REPO="${REPO,,}"
 REGISTRY="${REGISTRY_OVERRIDE:-ghcr.io}"
-BASE_IMAGE="${REGISTRY}/${REPO}/base:latest"
-TARGET_IMAGE="${REGISTRY}/${REPO}/base-${TARGET}:latest"
-IMAGE="${REGISTRY}/${REPO}/${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}:latest"
+BRANCH_TAG="${GITHUB_REF_NAME:-$(git branch --show-current 2>/dev/null || echo latest)}"
+BRANCH_TAG="${BRANCH_TAG//\//-}" # sanitize slashes
+
+BASE_IMAGE="${REGISTRY}/${REPO}/base:${BRANCH_TAG}"
+TARGET_IMAGE="${REGISTRY}/${REPO}/base-${TARGET}:${BRANCH_TAG}"
+IMAGE="${REGISTRY}/${REPO}/${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}:${BRANCH_TAG}"
 
 ffbuild_ffver() {
     case "$ADDINS_STR" in

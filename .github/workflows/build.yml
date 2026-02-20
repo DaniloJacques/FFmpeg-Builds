@@ -71,6 +71,8 @@ jobs:
           IMG="${IMG/ /-}"
           echo "name=ghcr.io/${IMG}" >> $GITHUB_OUTPUT
           echo "rawname=${IMG#*/}" >> $GITHUB_OUTPUT
+          TAG="${GITHUB_REF_NAME:-latest}"
+          echo "tag=${TAG//\//-}" >> $GITHUB_OUTPUT
       - name: Stop Commands
         run: T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
       - name: Build target base image
@@ -80,9 +82,9 @@ jobs:
           pull: true
           push: true
           provenance: false
-          tags: ${{ steps.imagename.outputs.name }}:latest${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
-          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
-          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
+          tags: ${{ steps.imagename.outputs.name }}:${{ steps.imagename.outputs.tag }}${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
+          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
+          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
       - name: Get download cache key
         if: ${{ !cancelled() && !contains(matrix.runner, 'arm') }}
         id: dl_cache
@@ -152,6 +154,8 @@ jobs:
           echo "name=ghcr.io/${IMG}" >> $GITHUB_OUTPUT
           echo "rawname=${IMG#*/}" >> $GITHUB_OUTPUT
           echo "gh_repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+          TAG="${GITHUB_REF_NAME:-latest}"
+          echo "tag=${TAG//\//-}" >> $GITHUB_OUTPUT
       - name: Stop Commands
         run: T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
       - name: Build target base image
@@ -161,11 +165,12 @@ jobs:
           pull: true
           push: true
           provenance: false
-          tags: ${{ steps.imagename.outputs.name }}:latest
-          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache
-          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache
+          tags: ${{ steps.imagename.outputs.name }}:${{ steps.imagename.outputs.tag }}
+          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}
+          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}
           build-args: |
             GH_REPO=ghcr.io/${{ steps.imagename.outputs.gh_repo }}
+            TAG=${{ steps.imagename.outputs.tag }}
       - name: Cleanup
         continue-on-error: true
         uses: BtbN/delete-untagged-ghcr-action@main
@@ -208,6 +213,8 @@ jobs:
           IMG="${IMG/ /-}"
           echo "name=ghcr.io/${IMG}" >> $GITHUB_OUTPUT
           echo "rawname=${IMG#*/}" >> $GITHUB_OUTPUT
+          TAG="${GITHUB_REF_NAME:-latest}"
+          echo "tag=${TAG//\//-}" >> $GITHUB_OUTPUT
       - name: Get download cache key
         id: dl_cache
         run: |
@@ -229,9 +236,9 @@ jobs:
           pull: true
           push: true
           provenance: false
-          tags: ${{ steps.imagename.outputs.name }}:latest
-          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache
-          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache
+          tags: ${{ steps.imagename.outputs.name }}:${{ steps.imagename.outputs.tag }}
+          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}
+          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}
       - name: Cleanup
         continue-on-error: true
         uses: BtbN/delete-untagged-ghcr-action@main
