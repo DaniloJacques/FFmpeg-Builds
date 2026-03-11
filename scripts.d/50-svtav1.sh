@@ -16,8 +16,13 @@ ffbuild_dockerdl() {
 ffbuild_dockerbuild() {
     mkdir build && cd build
 
+    local LTO_FLAG="-DSVT_AV1_LTO=ON"
+    if [[ $TARGET == win* ]]; then
+        LTO_FLAG="-DSVT_AV1_LTO=OFF"
+    fi
+
     cmake -DCMAKE_TOOLCHAIN_FILE="$FFBUILD_CMAKE_TOOLCHAIN" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" \
-        -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_APPS=OFF -DENABLE_AVX512=OFF -DSVT_AV1_LTO=OFF ..
+        -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_APPS=OFF -DENABLE_AVX512=OFF "$LTO_FLAG" ..
     make -j$(nproc)
     make install DESTDIR="$FFBUILD_DESTDIR"
 }

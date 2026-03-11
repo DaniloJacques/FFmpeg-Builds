@@ -23,6 +23,10 @@ ffbuild_dockerbuild() {
         -DENABLE_ALPHA=ON
     )
 
+    export CFLAGS="$RAW_CFLAGS -flto"
+    export CXXFLAGS="$RAW_CXXFLAGS -flto"
+    export LDFLAGS="$RAW_LDFLAGS -flto"
+
     sed -i '1i#include <cstdint>' source/dynamicHDR10/json11/json11.cpp
 
     if [[ $TARGET != *32 ]]; then
