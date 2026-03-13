@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - tigerlake
+      - tigerlake-clang
     paths-ignore:
       - '**.md'
       - 'LICENSE'
@@ -21,6 +22,7 @@ on:
         required: false
   schedule:
     - cron: '0 12 * * *'
+
 
 env:
   DOCKER_BUILDKIT: 1
@@ -71,8 +73,6 @@ jobs:
           IMG="${IMG/ /-}"
           echo "name=ghcr.io/${IMG}" >> $GITHUB_OUTPUT
           echo "rawname=${IMG#*/}" >> $GITHUB_OUTPUT
-          TAG="${GITHUB_REF_NAME:-latest}"
-          echo "tag=${TAG//\//-}" >> $GITHUB_OUTPUT
       - name: Stop Commands
         run: T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
       - name: Build target base image
@@ -82,9 +82,9 @@ jobs:
           pull: true
           push: true
           provenance: false
-          tags: ${{ steps.imagename.outputs.name }}:${{ steps.imagename.outputs.tag }}${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
-          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
-          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
+          tags: ${{ steps.imagename.outputs.name }}:latest${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
+          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
+          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache${{ (contains(matrix.runner, 'arm') && '-arm') || '' }}
       - name: Get download cache key
         if: ${{ !cancelled() && !contains(matrix.runner, 'arm') }}
         id: dl_cache
@@ -154,8 +154,6 @@ jobs:
           echo "name=ghcr.io/${IMG}" >> $GITHUB_OUTPUT
           echo "rawname=${IMG#*/}" >> $GITHUB_OUTPUT
           echo "gh_repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
-          TAG="${GITHUB_REF_NAME:-latest}"
-          echo "tag=${TAG//\//-}" >> $GITHUB_OUTPUT
       - name: Stop Commands
         run: T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
       - name: Build target base image
@@ -165,12 +163,11 @@ jobs:
           pull: true
           push: true
           provenance: false
-          tags: ${{ steps.imagename.outputs.name }}:${{ steps.imagename.outputs.tag }}
-          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}
-          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}
+          tags: ${{ steps.imagename.outputs.name }}:latest
+          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache
+          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache
           build-args: |
             GH_REPO=ghcr.io/${{ steps.imagename.outputs.gh_repo }}
-            TAG=${{ steps.imagename.outputs.tag }}
       - name: Cleanup
         continue-on-error: true
         uses: BtbN/delete-untagged-ghcr-action@main
@@ -213,8 +210,6 @@ jobs:
           IMG="${IMG/ /-}"
           echo "name=ghcr.io/${IMG}" >> $GITHUB_OUTPUT
           echo "rawname=${IMG#*/}" >> $GITHUB_OUTPUT
-          TAG="${GITHUB_REF_NAME:-latest}"
-          echo "tag=${TAG//\//-}" >> $GITHUB_OUTPUT
       - name: Get download cache key
         id: dl_cache
         run: |
@@ -236,9 +231,9 @@ jobs:
           pull: true
           push: true
           provenance: false
-          tags: ${{ steps.imagename.outputs.name }}:${{ steps.imagename.outputs.tag }}
-          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}
-          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache-${{ steps.imagename.outputs.tag }}
+          tags: ${{ steps.imagename.outputs.name }}:latest
+          cache-to: type=registry,mode=max,ref=${{ steps.imagename.outputs.name }}:cache
+          cache-from: type=registry,ref=${{ steps.imagename.outputs.name }}:cache
       - name: Cleanup
         continue-on-error: true
         uses: BtbN/delete-untagged-ghcr-action@main
@@ -274,6 +269,8 @@ jobs:
         run: |
           T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
           ./build.sh ${{ matrix.target }} ${{ matrix.variant }}
+        env:
+          CPU_ARCH: ${{ github.ref_name }}
       - name: Replace spaces in string
         id: strs
         run: |
@@ -282,7 +279,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-optimized-tigerlake-${{ steps.strs.outputs.artifact_slug }}
+          name: ffmpeg-optimized-${{ github.ref_name }}-${{ steps.strs.outputs.artifact_slug }}
           overwrite: true
           path: artifacts/*
   publish_release:
@@ -298,7 +295,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: ffmpeg-optimized-tigerlake-*
+          pattern: ffmpeg-optimized-${{ github.ref_name }}-*
           merge-multiple: true
           path: artifacts
       - name: Update Latest Release
@@ -307,22 +304,20 @@ jobs:
           set -xe
           shopt -s nullglob
           RELDATE="$(date +'%Y-%m-%d %H:%M')"
-          NAME="Tiger Lake (11th Gen Intel) Optimized Build ($RELDATE)"
-          TAGNAME="latest-tigerlake"
+          NAME="${{ github.ref_name }} Optimized Build ($RELDATE)"
+          TAGNAME="latest-${{ github.ref_name }}"
           (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
           
           # Create release notes
-          cat > release_notes.md << 'EOF'
-          ## 🚀 Tiger Lake (Intel 11th Gen) Optimized FFmpeg Build
+          cat > release_notes.md << EOF
+          ## 🚀 ${{ github.ref_name }} Optimized FFmpeg Build
           
-          This build is optimized for **Intel Tiger Lake** processors (11th Gen mobile).
+          This build is optimized for **${{ github.ref_name }}** architecture.
           
-          ### 📝 Features
-          - **AVX-512** (F, CD, BW, DQ, VL, VBMI, VBMI2, VNNI, BITALG, VPOPCNTDQ)
-          - **GFNI** - Galois Field instructions
-          - **VAES/VPCLMULQDQ** - Vectorized AES/CLMUL
+          ### 📝 Highlights
+          - Automatically triggered by push on \`${{ github.ref_name }}\` branch
           
-          > ⚠️ **Linux Note:** `librav1e` is disabled due to Rust build limitations on GitHub Actions.
+          > ⚠️ **Linux Note:** \`librav1e\` is disabled due to Rust build limitations on GitHub Actions.
           
           ---
           
@@ -331,7 +326,7 @@ jobs:
           | Build | Target CPU | Link |
           |-------|------------|------|
           | **x86-64v3** | Generic Modern (Haswell+) | [latest-x86-64v3](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-x86-64v3) |
-          | **Zen3** | AMD Ryzen 5000 / EPYC 7003 | [latest-zen3](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-zen3) |
+          | **Tiger Lake** | Intel 11th Gen (mobile) | [latest-tigerlake](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-tigerlake) |
           
           ---
           *Built by [jogadann-optimized](https://github.com/DaniloJacques/FFmpeg-Builds)*
@@ -339,7 +334,7 @@ jobs:
           
           gh release delete --cleanup-tag --yes "$TAGNAME" || true
           sleep 5
-          gh release create "$TAGNAME" --target "tigerlake" --title "$NAME" --notes-file release_notes.md artifacts/*.{zip,tar.xz} artifacts/checksums.*
+          gh release create "$TAGNAME" --target "${{ github.sha }}" --title "$NAME" --notes-file release_notes.md artifacts/*.{zip,tar.xz} artifacts/checksums.*
           echo "tag_name=${TAGNAME}" >> $GITHUB_OUTPUT
           echo "rel_date=${RELDATE}" >> $GITHUB_OUTPUT
         env:
