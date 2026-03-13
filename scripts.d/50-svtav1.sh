@@ -23,10 +23,17 @@ ffbuild_dockerbuild() {
     echo 'set(CMAKE_RANLIB llvm-ranlib)' >> "$PWD/clang_toolchain.cmake"
     echo 'set(CMAKE_NM llvm-nm)' >> "$PWD/clang_toolchain.cmake"
 
-    # Build clean CFLAGS for Clang
-    local CLANG_CFLAGS="-I/opt/ffbuild/include -O2 -pipe -fPIC -DPIC --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -Wno-unused-command-line-argument"
-    local CLANG_CXXFLAGS="$CLANG_CFLAGS"
-    local CLANG_LDFLAGS="-L/opt/ffbuild/lib -O2 -pipe --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -fuse-ld=lld"
+    # Build clean CFLAGS for Clang based on RAW_CFLAGS, stripping incompatible flags
+    local CLEAN_CFLAGS="${RAW_CFLAGS//-static-libgcc/}"
+    CLEAN_CFLAGS="${CLEAN_CFLAGS//-static-libstdc++/}"
+    local CLEAN_CXXFLAGS="${RAW_CXXFLAGS//-static-libgcc/}"
+    CLEAN_CXXFLAGS="${CLEAN_CXXFLAGS//-static-libstdc++/}"
+    local CLEAN_LDFLAGS="${RAW_LDFLAGS//-static-libgcc/}"
+    CLEAN_LDFLAGS="${CLEAN_LDFLAGS//-static-libstdc++/}"
+
+    local CLANG_CFLAGS="$CLEAN_CFLAGS $FF_CFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -Wno-unused-command-line-argument"
+    local CLANG_CXXFLAGS="$CLEAN_CXXFLAGS $FF_CXXFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -Wno-unused-command-line-argument"
+    local CLANG_LDFLAGS="$CLEAN_LDFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -fuse-ld=lld"
 
     if [[ $TARGET == win* ]]; then
         # Override sysroot for MinGW and add GCC libgcc path
