@@ -26,7 +26,7 @@ ffbuild_dockerbuild() {
     # Build clean CFLAGS for Clang
     local CLANG_CFLAGS="-I/opt/ffbuild/include -O2 -pipe -fPIC -DPIC --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -Wno-unused-command-line-argument"
     local CLANG_CXXFLAGS="$CLANG_CFLAGS"
-    local CLANG_LDFLAGS="-L/opt/ffbuild/lib -O2 -pipe --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -fuse-ld=lld -static-libgcc -static-libstdc++"
+    local CLANG_LDFLAGS="-L/opt/ffbuild/lib -O2 -pipe --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -fuse-ld=lld"
 
     if [[ $TARGET == win* ]]; then
         # Override sysroot for MinGW and add GCC libgcc path
