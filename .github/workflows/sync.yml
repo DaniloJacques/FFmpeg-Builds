@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        branch: [x86_64v3, tigerlake, zen3]
+        branch: [x86_64v3, tigerlake, zen3, zen3-clang]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

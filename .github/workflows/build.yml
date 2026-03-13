@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - zen3
+      - zen3-clang
     paths-ignore:
       - '**.md'
       - 'LICENSE'
