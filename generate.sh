@@ -47,7 +47,7 @@ exec_dockerstage() {
 
 export TODF="Dockerfile"
 
-to_df "FROM ${REGISTRY}/${REPO}/base-${TARGET}:latest AS base"
+to_df "FROM ${REGISTRY}/${REPO}/base-${TARGET}:${BRANCH_TAG:-latest} AS base"
 to_df "ENV TARGET=$TARGET VARIANT=$VARIANT REPO=$REPO ADDINS_STR=$ADDINS_STR"
 to_df "COPY --link util/run_stage.sh /usr/bin/run_stage"
 
