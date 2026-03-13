@@ -270,7 +270,7 @@ jobs:
           T="$(echo -n ${{ github.token }} | sha256sum | head -c 64)" && echo -e "::add-mask::${T}\n::stop-commands::${T}"
           ./build.sh ${{ matrix.target }} ${{ matrix.variant }}
         env:
-          CPU_ARCH: zen3
+          CPU_ARCH: ${{ github.ref_name }}
       - name: Replace spaces in string
         id: strs
         run: |
@@ -279,7 +279,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-optimized-zen3-${{ steps.strs.outputs.artifact_slug }}
+          name: ffmpeg-optimized-${{ github.ref_name }}-${{ steps.strs.outputs.artifact_slug }}
           overwrite: true
           path: artifacts/*
   publish_release:
@@ -295,7 +295,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: ffmpeg-optimized-zen3-*
+          pattern: ffmpeg-optimized-${{ github.ref_name }}-*
           merge-multiple: true
           path: artifacts
       - name: Update Latest Release
@@ -304,21 +304,20 @@ jobs:
           set -xe
           shopt -s nullglob
           RELDATE="$(date +'%Y-%m-%d %H:%M')"
-          NAME="Zen 3 (Ryzen 5000/EPYC) Optimized Build ($RELDATE)"
-          TAGNAME="latest-zen3"
+          NAME="${{ github.ref_name }} Optimized Build ($RELDATE)"
+          TAGNAME="latest-${{ github.ref_name }}"
           (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
           
           # Create release notes
-          cat > release_notes.md << 'EOF'
-          ## 🚀 Zen 3 (Ryzen 5000) Optimized FFmpeg Build
+          cat > release_notes.md << EOF
+          ## 🚀 ${{ github.ref_name }} Optimized FFmpeg Build
           
-          This build is optimized for **AMD Zen 3** processors (Ryzen 5000, EPYC 7003).
+          This build is optimized for **${{ github.ref_name }}** architecture.
           
-          ### 📝 Features
-          - **AVX2** (Optimized for Zen 3 pipeline)
-          - **FMA3, BMI2**
+          ### 📝 Highlights
+          - Automatically triggered by push on \`${{ github.ref_name }}\` branch
           
-          > ⚠️ **Linux Note:** `librav1e` is disabled due to Rust build limitations on GitHub Actions.
+          > ⚠️ **Linux Note:** \`librav1e\` is disabled due to Rust build limitations on GitHub Actions.
           
           ---
           
@@ -335,7 +334,7 @@ jobs:
           
           gh release delete --cleanup-tag --yes "$TAGNAME" || true
           sleep 5
-          gh release create "$TAGNAME" --target "zen3" --title "$NAME" --notes-file release_notes.md artifacts/*.{zip,tar.xz} artifacts/checksums.*
+          gh release create "$TAGNAME" --target "${{ github.sha }}" --title "$NAME" --notes-file release_notes.md artifacts/*.{zip,tar.xz} artifacts/checksums.*
           echo "tag_name=${TAGNAME}" >> $GITHUB_OUTPUT
           echo "rel_date=${RELDATE}" >> $GITHUB_OUTPUT
         env:
