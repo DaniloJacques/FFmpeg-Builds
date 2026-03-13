@@ -31,17 +31,20 @@ ffbuild_dockerbuild() {
     local CLEAN_LDFLAGS="${RAW_LDFLAGS//-static-libgcc/}"
     CLEAN_LDFLAGS="${CLEAN_LDFLAGS//-static-libstdc++/}"
 
-    local CLANG_CFLAGS="$CLEAN_CFLAGS $FF_CFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -Wno-unused-command-line-argument"
-    local CLANG_CXXFLAGS="$CLEAN_CXXFLAGS $FF_CXXFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -Wno-unused-command-line-argument"
+    local CLANG_CFLAGS="$CLEAN_CFLAGS $FF_CFLAGS --target=$FFBUILD_TOOLCHAIN -flto=thin -Wno-unused-command-line-argument"
+    local CLANG_CXXFLAGS="$CLEAN_CXXFLAGS $FF_CXXFLAGS --target=$FFBUILD_TOOLCHAIN -flto=thin -Wno-unused-command-line-argument"
     local CLANG_LDFLAGS="$CLEAN_LDFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -flto=thin -fuse-ld=lld"
 
     if [[ $TARGET == win* ]]; then
         # Override sysroot for MinGW and add GCC libgcc path
         local GCC_LIB_DIR="$(dirname $(${FFBUILD_TOOLCHAIN}-gcc -print-libgcc-file-name))"
         echo "set(CMAKE_SYSROOT /opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw)" >> "$PWD/clang_toolchain.cmake"
-        CLANG_CFLAGS="$CLANG_CFLAGS --sysroot=/opt/ct-ng/$FFBUILD_TOOLCHAIN/sysroot/mingw"
+        CLANG_CFLAGS="$CLANG_CFLAGS --sysroot=/opt/ct-ng/$FFBUILD_TOOLCHAIN/sysroot/mingw -Qunused-arguments"
         CLANG_CXXFLAGS="$CLANG_CFLAGS"
         CLANG_LDFLAGS="$CLANG_LDFLAGS --sysroot=/opt/ct-ng/$FFBUILD_TOOLCHAIN/sysroot/mingw -L$GCC_LIB_DIR -L/opt/ct-ng/$FFBUILD_TOOLCHAIN/sysroot/lib"
+    else
+        CLANG_CFLAGS="$CLANG_CFLAGS --gcc-toolchain=/opt/ct-ng"
+        CLANG_CXXFLAGS="$CLANG_CXXFLAGS --gcc-toolchain=/opt/ct-ng"
     fi
 
     export CFLAGS="$CLANG_CFLAGS"
