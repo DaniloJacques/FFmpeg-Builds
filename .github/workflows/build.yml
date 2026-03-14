@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - tigerlake
+      - tigerlake-clang-full
     paths-ignore:
       - '**.md'
       - 'LICENSE'
@@ -308,12 +309,12 @@ jobs:
           shopt -s nullglob
           RELDATE="$(date +'%Y-%m-%d %H:%M')"
           NAME="Tiger Lake (11th Gen Intel) Optimized Build ($RELDATE)"
-          TAGNAME="latest-tigerlake"
+          TAGNAME="latest-tigerlake-clang-full"
           (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
           
           # Create release notes
           cat > release_notes.md << 'EOF'
-          ## 🚀 Tiger Lake (Intel 11th Gen) Optimized FFmpeg Build
+          ## 🚀 Tiger Lake (Intel 11th Gen) Optimized FFmpeg Build (EXPERIMENTAL FULL CLANG)
           
           This build is optimized for **Intel Tiger Lake** processors (11th Gen mobile).
           
@@ -321,6 +322,7 @@ jobs:
           - **AVX-512** (F, CD, BW, DQ, VL, VBMI, VBMI2, VNNI, BITALG, VPOPCNTDQ)
           - **GFNI** - Galois Field instructions
           - **VAES/VPCLMULQDQ** - Vectorized AES/CLMUL
+          - **[LLVM 21 Experimental Full Toolchain]**
           
           > ⚠️ **Linux Note:** `librav1e` is disabled due to Rust build limitations on GitHub Actions.
           
@@ -339,7 +341,7 @@ jobs:
           
           gh release delete --cleanup-tag --yes "$TAGNAME" || true
           sleep 5
-          gh release create "$TAGNAME" --target "tigerlake" --title "$NAME" --notes-file release_notes.md artifacts/*.{zip,tar.xz} artifacts/checksums.*
+          gh release create "$TAGNAME" --target "tigerlake-clang-full" --title "$NAME" --notes-file release_notes.md artifacts/*.{zip,tar.xz} artifacts/checksums.*
           echo "tag_name=${TAGNAME}" >> $GITHUB_OUTPUT
           echo "rel_date=${RELDATE}" >> $GITHUB_OUTPUT
         env:
