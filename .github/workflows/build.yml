@@ -5,6 +5,7 @@ on:
     branches:
       - zen3
       - zen3-clang
+      - zen3-aocc
     paths-ignore:
       - '**.md'
       - 'LICENSE'
@@ -327,6 +328,9 @@ jobs:
           |-------|------------|------|
           | **x86-64v3** | Generic Modern (Haswell+) | [latest-x86-64v3](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-x86-64v3) |
           | **Tiger Lake** | Intel 11th Gen (mobile) | [latest-tigerlake](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-tigerlake) |
+          | **Zen 3 (GCC native)** | AMD Ryzen 5000+ (Fastest Default) | [latest-zen3](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-zen3) |
+          | **Zen 3 (SVT-AOCC)** | AMD Ryzen 5000+ (Experimental AMD Compiler) | [latest-zen3-aocc](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-zen3-aocc) |
+          | **Zen 3 (SVT-Clang)** | AMD Ryzen 5000+ (Experimental LLVM) | [latest-zen3-clang](https://github.com/DaniloJacques/FFmpeg-Builds/releases/tag/latest-zen3-clang) |
           
           ---
           *Built by [jogadann-optimized](https://github.com/DaniloJacques/FFmpeg-Builds)*
