@@ -235,7 +235,8 @@ jobs:
         with:
           path: .cache/downloads
           key: download-cache-${{ steps.dl_cache.outputs.dltagname }}
-          fail-on-cache-miss: true
+          restore-keys: |
+            download-cache-
       - name: Build target base image
         uses: docker/build-push-action@v6
         with:
