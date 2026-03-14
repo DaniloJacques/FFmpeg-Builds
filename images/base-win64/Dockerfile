@@ -46,17 +46,17 @@ ADD toolchain.cmake /toolchain.cmake
 ADD cross.meson /cross.meson
 
 ENV PATH="/opt/AMD/aocc-compiler-5.1.0/bin:/opt/ct-ng/bin:${PATH}" \
-    FFBUILD_TARGET_FLAGS="--pkg-config=pkg-config --cross-prefix=${FFBUILD_TOOLCHAIN}- --arch=x86_64 --target-os=mingw32" \
+    FFBUILD_TARGET_FLAGS="--pkg-config=pkg-config --cross-prefix=${FFBUILD_TOOLCHAIN}- --arch=x86_64 --target-os=mingw32 --enable-lto" \
     FFBUILD_CROSS_PREFIX=${FFBUILD_TOOLCHAIN}- \
     FFBUILD_PREFIX=/opt/ffbuild \
     FFBUILD_DESTDIR=/opt/ffdest \
     FFBUILD_DESTPREFIX=/opt/ffdest/opt/ffbuild \
-    FFBUILD_CMAKE_TOOLCHAIN=/toolchain.cmake \
+     FFBUILD_CMAKE_TOOLCHAIN=/toolchain.cmake \
     PKG_CONFIG=pkg-config \
     PKG_CONFIG_LIBDIR=/opt/ffbuild/lib/pkgconfig:/opt/ffbuild/share/pkgconfig \
-    CC="${FFBUILD_TOOLCHAIN}-gcc" \
-    CXX="${FFBUILD_TOOLCHAIN}-g++" \
-    LD="${FFBUILD_TOOLCHAIN}-ld" \
+    CC="clang --target=${FFBUILD_TOOLCHAIN} --sysroot=/opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw" \
+    CXX="clang++ --target=${FFBUILD_TOOLCHAIN} --sysroot=/opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw" \
+    LD="clang --target=${FFBUILD_TOOLCHAIN} --sysroot=/opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw -fuse-ld=lld" \
     AR="${FFBUILD_TOOLCHAIN}-gcc-ar" \
     RANLIB="${FFBUILD_TOOLCHAIN}-gcc-ranlib" \
     NM="${FFBUILD_TOOLCHAIN}-gcc-nm" \

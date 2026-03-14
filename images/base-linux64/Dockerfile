@@ -65,7 +65,7 @@ ADD gen-implib.sh /usr/bin/gen-implib
 RUN git clone --filter=blob:none --depth=1 https://github.com/yugr/Implib.so /opt/implib
 
 ENV PATH="/opt/AMD/aocc-compiler-5.1.0/bin:/opt/ct-ng/bin:${PATH}" \
-    FFBUILD_TARGET_FLAGS="--pkg-config=pkg-config --cross-prefix=${FFBUILD_TOOLCHAIN}- --arch=x86_64 --target-os=linux" \
+    FFBUILD_TARGET_FLAGS="--pkg-config=pkg-config --cross-prefix=${FFBUILD_TOOLCHAIN}- --arch=x86_64 --target-os=linux --enable-lto" \
     FFBUILD_CROSS_PREFIX="${FFBUILD_TOOLCHAIN}-" \
     FFBUILD_PREFIX=/opt/ffbuild \
     FFBUILD_DESTDIR=/opt/ffdest \
@@ -73,9 +73,9 @@ ENV PATH="/opt/AMD/aocc-compiler-5.1.0/bin:/opt/ct-ng/bin:${PATH}" \
     FFBUILD_CMAKE_TOOLCHAIN=/toolchain.cmake \
     PKG_CONFIG=pkg-config \
     PKG_CONFIG_LIBDIR=/opt/ffbuild/lib/pkgconfig:/opt/ffbuild/share/pkgconfig \
-    CC="${FFBUILD_TOOLCHAIN}-gcc" \
-    CXX="${FFBUILD_TOOLCHAIN}-g++" \
-    LD="${FFBUILD_TOOLCHAIN}-ld" \
+    CC="clang --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng" \
+    CXX="clang++ --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng" \
+    LD="clang --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng -fuse-ld=lld" \
     AR="${FFBUILD_TOOLCHAIN}-gcc-ar" \
     RANLIB="${FFBUILD_TOOLCHAIN}-gcc-ranlib" \
     NM="${FFBUILD_TOOLCHAIN}-gcc-nm" \
