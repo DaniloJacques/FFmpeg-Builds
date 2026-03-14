@@ -34,6 +34,20 @@ RUN \
         -delete && \
     mkdir /opt/ffbuild
 
+# LLVM 21 (Rolling Release) Installation for Full Clang Environment
+RUN \
+    apt-get -y update && \
+    apt-get -y install --no-install-recommends curl gnupg lsb-release && \
+    curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor --yes -o /usr/share/keyrings/apt.llvm.org.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/apt.llvm.org.gpg] http://apt.llvm.org/noble/ llvm-toolchain-noble-21 main" > /etc/apt/sources.list.d/llvm-toolchain-21.list && \
+    apt-get -y update && \
+    apt-get -y install --no-install-recommends clang-21 lld-21 llvm-21 && \
+    ln -sf /usr/bin/clang-21 /usr/local/bin/clang && \
+    ln -sf /usr/bin/clang++-21 /usr/local/bin/clang++ && \
+    ln -sf /usr/bin/lld-21 /usr/local/bin/lld && \
+    apt-get -y clean autoclean && \
+    rm -rf /var/lib/apt/lists/*
+
 ENV FFBUILD_TOOLCHAIN=x86_64-ffbuild-linux-gnu \
     FFBUILD_RUST_TARGET="x86_64-unknown-linux-gnu"
 
@@ -58,9 +72,9 @@ ENV PATH="/opt/ct-ng/bin:${PATH}" \
     FFBUILD_CMAKE_TOOLCHAIN=/toolchain.cmake \
     PKG_CONFIG=pkg-config \
     PKG_CONFIG_LIBDIR=/opt/ffbuild/lib/pkgconfig:/opt/ffbuild/share/pkgconfig \
-    CC="${FFBUILD_TOOLCHAIN}-gcc" \
-    CXX="${FFBUILD_TOOLCHAIN}-g++" \
-    LD="${FFBUILD_TOOLCHAIN}-ld" \
+    CC="clang --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng" \
+    CXX="clang++ --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng" \
+    LD="clang --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng -fuse-ld=lld" \
     AR="${FFBUILD_TOOLCHAIN}-gcc-ar" \
     RANLIB="${FFBUILD_TOOLCHAIN}-gcc-ranlib" \
     NM="${FFBUILD_TOOLCHAIN}-gcc-nm" \

@@ -20,9 +20,17 @@ RUN \
         -delete && \
     mkdir /opt/ffbuild
 
+# LLVM 21 (Rolling Release) Installation for Full Clang Environment
 RUN \
     apt-get -y update && \
-    apt-get -y install --no-install-recommends wine-stable && \
+    apt-get -y install --no-install-recommends curl gnupg lsb-release wine-stable && \
+    curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor --yes -o /usr/share/keyrings/apt.llvm.org.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/apt.llvm.org.gpg] http://apt.llvm.org/noble/ llvm-toolchain-noble-21 main" > /etc/apt/sources.list.d/llvm-toolchain-21.list && \
+    apt-get -y update && \
+    apt-get -y install --no-install-recommends clang-21 lld-21 llvm-21 && \
+    ln -sf /usr/bin/clang-21 /usr/local/bin/clang && \
+    ln -sf /usr/bin/clang++-21 /usr/local/bin/clang++ && \
+    ln -sf /usr/bin/lld-21 /usr/local/bin/lld && \
     apt-get -y clean autoclean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -37,7 +45,7 @@ ADD toolchain.cmake /toolchain.cmake
 ADD cross.meson /cross.meson
 
 ENV PATH="/opt/ct-ng/bin:${PATH}" \
-    FFBUILD_TARGET_FLAGS="--pkg-config=pkg-config --cross-prefix=${FFBUILD_TOOLCHAIN}- --arch=x86_64 --target-os=mingw32 --enable-lto" \
+    FFBUILD_TARGET_FLAGS="--pkg-config=pkg-config --cross-prefix=${FFBUILD_TOOLCHAIN}- --arch=x86_64 --target-os=mingw32" \
     FFBUILD_CROSS_PREFIX=${FFBUILD_TOOLCHAIN}- \
     FFBUILD_PREFIX=/opt/ffbuild \
     FFBUILD_DESTDIR=/opt/ffdest \
@@ -45,9 +53,9 @@ ENV PATH="/opt/ct-ng/bin:${PATH}" \
     FFBUILD_CMAKE_TOOLCHAIN=/toolchain.cmake \
     PKG_CONFIG=pkg-config \
     PKG_CONFIG_LIBDIR=/opt/ffbuild/lib/pkgconfig:/opt/ffbuild/share/pkgconfig \
-    CC="${FFBUILD_TOOLCHAIN}-gcc" \
-    CXX="${FFBUILD_TOOLCHAIN}-g++" \
-    LD="${FFBUILD_TOOLCHAIN}-ld" \
+    CC="clang --target=${FFBUILD_TOOLCHAIN} --sysroot=/opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw" \
+    CXX="clang++ --target=${FFBUILD_TOOLCHAIN} --sysroot=/opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw" \
+    LD="clang --target=${FFBUILD_TOOLCHAIN} --sysroot=/opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw -fuse-ld=lld" \
     AR="${FFBUILD_TOOLCHAIN}-gcc-ar" \
     RANLIB="${FFBUILD_TOOLCHAIN}-gcc-ranlib" \
     NM="${FFBUILD_TOOLCHAIN}-gcc-nm" \
