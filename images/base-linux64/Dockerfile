@@ -33,6 +33,22 @@ RUN \
         -delete && \
     mkdir /opt/ffbuild
 
+# AMD Optimizing C/C++ Compiler (AOCC) 5.1.0 Installation
+RUN \
+    apt-get -y update && \
+    apt-get -y install --no-install-recommends wget && \
+    wget --referer=https://www.amd.com/en/developer/aocc/eula/aocc-5-1-eula.html \
+        https://download.amd.com/developer/eula/aocc/aocc-5-1/aocc-compiler-5.1.0_1_amd64.deb -O /tmp/aocc.deb && \
+    apt-get install -y /tmp/aocc.deb && \
+    rm /tmp/aocc.deb && \
+    # Create symlinks for generic clang invocations to AOCC frontend
+    ln -sf /opt/AMD/aocc-compiler-5.1.0/bin/clang /usr/local/bin/clang && \
+    ln -sf /opt/AMD/aocc-compiler-5.1.0/bin/clang++ /usr/local/bin/clang++ && \
+    ln -sf /opt/AMD/aocc-compiler-5.1.0/bin/flang /usr/local/bin/flang && \
+    ln -sf /opt/AMD/aocc-compiler-5.1.0/bin/lld /usr/local/bin/lld && \
+    apt-get -y clean autoclean && \
+    rm -rf /var/lib/apt/lists/*
+
 ENV FFBUILD_TOOLCHAIN=x86_64-ffbuild-linux-gnu \
     FFBUILD_RUST_TARGET="x86_64-unknown-linux-gnu"
 
@@ -48,8 +64,8 @@ ADD cross.meson /cross.meson
 ADD gen-implib.sh /usr/bin/gen-implib
 RUN git clone --filter=blob:none --depth=1 https://github.com/yugr/Implib.so /opt/implib
 
-ENV PATH="/opt/ct-ng/bin:${PATH}" \
-    FFBUILD_TARGET_FLAGS="--pkg-config=pkg-config --cross-prefix=${FFBUILD_TOOLCHAIN}- --arch=x86_64 --target-os=linux --enable-lto" \
+ENV PATH="/opt/AMD/aocc-compiler-5.1.0/bin:/opt/ct-ng/bin:${PATH}" \
+    FFBUILD_TARGET_FLAGS="--pkg-config=pkg-config --cross-prefix=${FFBUILD_TOOLCHAIN}- --arch=x86_64 --target-os=linux" \
     FFBUILD_CROSS_PREFIX="${FFBUILD_TOOLCHAIN}-" \
     FFBUILD_PREFIX=/opt/ffbuild \
     FFBUILD_DESTDIR=/opt/ffdest \
