@@ -23,6 +23,9 @@ ffbuild_dockerbuild() {
         -DENABLE_ALPHA=ON
     )
 
+    # Injetar temporariamente binários do LLVM-21 (Targeted Clang Phase 1)
+    export PATH="/opt/llvm-21/bin:$PATH"
+
     export CFLAGS="$RAW_CFLAGS -flto"
     export CXXFLAGS="$RAW_CXXFLAGS -flto"
     export LDFLAGS="$RAW_LDFLAGS -flto"
