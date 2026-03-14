@@ -16,6 +16,9 @@ ffbuild_dockerdl() {
 ffbuild_dockerbuild() {
     mkdir build && cd build
 
+    # Injetar temporariamente binários do LLVM-21 (Targeted Clang Phase 1)
+    export PATH="/opt/llvm-21/bin:$PATH"
+
     cp "$FFBUILD_CMAKE_TOOLCHAIN" "$PWD/clang_toolchain.cmake"
     echo 'set(CMAKE_C_COMPILER clang)' >> "$PWD/clang_toolchain.cmake"
     echo 'set(CMAKE_CXX_COMPILER clang++)' >> "$PWD/clang_toolchain.cmake"
