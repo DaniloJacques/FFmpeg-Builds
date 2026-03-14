@@ -25,6 +25,10 @@ on:
 env:
   DOCKER_BUILDKIT: 1
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   pre_check:
     name: Pre Checks
