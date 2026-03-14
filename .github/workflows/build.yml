@@ -102,8 +102,7 @@ jobs:
         with:
           path: .cache/downloads
           key: download-cache-${{ steps.dl_cache.outputs.dltagname }}
-          restore-keys: |
-            download-cache-
+          fail-on-cache-miss: true
       - name: Update Cache
         if: ${{ !cancelled() && !contains(matrix.runner, 'arm') }}
         run: |
@@ -234,8 +233,7 @@ jobs:
         with:
           path: .cache/downloads
           key: download-cache-${{ steps.dl_cache.outputs.dltagname }}
-          restore-keys: |
-            download-cache-
+          fail-on-cache-miss: true
       - name: Build target base image
         uses: docker/build-push-action@v6
         with:
