@@ -20,9 +20,18 @@ RUN \
         -delete && \
     mkdir /opt/ffbuild
 
+# LLVM 21 (Rolling Release) Installation for Targeted Clang
 RUN \
     apt-get -y update && \
-    apt-get -y install --no-install-recommends wine-stable && \
+    apt-get -y install --no-install-recommends curl gnupg lsb-release wine-stable && \
+    curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor --yes -o /usr/share/keyrings/apt.llvm.org.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/apt.llvm.org.gpg] http://apt.llvm.org/noble/ llvm-toolchain-noble-21 main" > /etc/apt/sources.list.d/llvm-toolchain-21.list && \
+    apt-get -y update && \
+    apt-get -y install --no-install-recommends clang-21 lld-21 llvm-21 && \
+    mkdir -p /opt/llvm-21/bin && \
+    ln -sf /usr/bin/clang-21 /opt/llvm-21/bin/clang && \
+    ln -sf /usr/bin/clang++-21 /opt/llvm-21/bin/clang++ && \
+    ln -sf /usr/bin/lld-21 /opt/llvm-21/bin/lld && \
     apt-get -y clean autoclean && \
     rm -rf /var/lib/apt/lists/*
 
