@@ -31,8 +31,8 @@ ffbuild_dockerbuild() {
     local CLEAN_LDFLAGS="${RAW_LDFLAGS//-static-libgcc/}"
     CLEAN_LDFLAGS="${CLEAN_LDFLAGS//-static-libstdc++/}"
 
-    local CLANG_CFLAGS="$CLEAN_CFLAGS $FF_CFLAGS --target=$FFBUILD_TOOLCHAIN -Wno-unused-command-line-argument"
-    local CLANG_CXXFLAGS="$CLEAN_CXXFLAGS $FF_CXXFLAGS --target=$FFBUILD_TOOLCHAIN -Wno-unused-command-line-argument"
+    local CLANG_CFLAGS="$CLEAN_CFLAGS $FF_CFLAGS --target=$FFBUILD_TOOLCHAIN -ffat-lto-objects -Wno-unused-command-line-argument"
+    local CLANG_CXXFLAGS="$CLEAN_CXXFLAGS $FF_CXXFLAGS --target=$FFBUILD_TOOLCHAIN -ffat-lto-objects -Wno-unused-command-line-argument"
     local CLANG_LDFLAGS="$CLEAN_LDFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -fuse-ld=lld"
 
     if [[ $TARGET == win* ]]; then
