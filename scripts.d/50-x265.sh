@@ -36,9 +36,9 @@ ffbuild_dockerbuild() {
         export LD="clang --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng -fuse-ld=lld"
     fi
 
-    export CFLAGS="$RAW_CFLAGS -fno-lto"
-    export CXXFLAGS="$RAW_CXXFLAGS -fno-lto"
-    export LDFLAGS="$RAW_LDFLAGS -fno-lto"
+    export CFLAGS="$RAW_CFLAGS -flto"
+    export CXXFLAGS="$RAW_CXXFLAGS -fto"
+    export LDFLAGS="$RAW_LDFLAGS -flto"
 
     sed -i '1i#include <cstdint>' source/dynamicHDR10/json11/json11.cpp
 
