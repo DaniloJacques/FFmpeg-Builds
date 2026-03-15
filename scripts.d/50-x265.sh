@@ -26,6 +26,16 @@ ffbuild_dockerbuild() {
     # Injetar temporariamente binários do LLVM-21 (Targeted Clang Phase 1)
     export PATH="/opt/llvm-21/bin:$PATH"
 
+    if [[ $TARGET == win64 ]]; then
+        export CC="clang --target=${FFBUILD_TOOLCHAIN} --sysroot=/opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw"
+        export CXX="clang++ --target=${FFBUILD_TOOLCHAIN} --sysroot=/opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw"
+        export LD="clang --target=${FFBUILD_TOOLCHAIN} --sysroot=/opt/ct-ng/${FFBUILD_TOOLCHAIN}/sysroot/mingw -fuse-ld=lld"
+    else
+        export CC="clang --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng"
+        export CXX="clang++ --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng"
+        export LD="clang --target=${FFBUILD_TOOLCHAIN} --gcc-toolchain=/opt/ct-ng -fuse-ld=lld"
+    fi
+
     export CFLAGS="$RAW_CFLAGS -flto"
     export CXXFLAGS="$RAW_CXXFLAGS -flto"
     export LDFLAGS="$RAW_LDFLAGS -flto"
