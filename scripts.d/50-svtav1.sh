@@ -31,9 +31,9 @@ ffbuild_dockerbuild() {
     local CLEAN_LDFLAGS="${RAW_LDFLAGS//-static-libgcc/}"
     CLEAN_LDFLAGS="${CLEAN_LDFLAGS//-static-libstdc++/}"
 
-    local CLANG_CFLAGS="$CLEAN_CFLAGS $FF_CFLAGS --target=$FFBUILD_TOOLCHAIN -Wno-unused-command-line-argument"
-    local CLANG_CXXFLAGS="$CLEAN_CXXFLAGS $FF_CXXFLAGS --target=$FFBUILD_TOOLCHAIN -Wno-unused-command-line-argument"
-    local CLANG_LDFLAGS="$CLEAN_LDFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -fuse-ld=lld"
+    local CLANG_CFLAGS="$CLEAN_CFLAGS $FF_CFLAGS --target=$FFBUILD_TOOLCHAIN -fno-lto -Wno-unused-command-line-argument"
+    local CLANG_CXXFLAGS="$CLEAN_CXXFLAGS $FF_CXXFLAGS --target=$FFBUILD_TOOLCHAIN -fno-lto -Wno-unused-command-line-argument"
+    local CLANG_LDFLAGS="$CLEAN_LDFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -fuse-ld=lld -fno-lto"
 
     if [[ $TARGET == win* ]]; then
         # Override sysroot for MinGW and add GCC libgcc path
