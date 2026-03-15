@@ -34,9 +34,9 @@ ffbuild_dockerbuild() {
     local CLEAN_LDFLAGS="${RAW_LDFLAGS//-static-libgcc/}"
     CLEAN_LDFLAGS="${CLEAN_LDFLAGS//-static-libstdc++/}"
 
-    local CLANG_CFLAGS="$CLEAN_CFLAGS $FF_CFLAGS --target=$FFBUILD_TOOLCHAIN -fno-lto -Wno-unused-command-line-argument"
-    local CLANG_CXXFLAGS="$CLEAN_CXXFLAGS $FF_CXXFLAGS --target=$FFBUILD_TOOLCHAIN -fno-lto -Wno-unused-command-line-argument"
-    local CLANG_LDFLAGS="$CLEAN_LDFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -fuse-ld=lld -fno-lto"
+    local CLANG_CFLAGS="$CLEAN_CFLAGS $FF_CFLAGS --target=$FFBUILD_TOOLCHAIN -Wno-unused-command-line-argument"
+    local CLANG_CXXFLAGS="$CLEAN_CXXFLAGS $FF_CXXFLAGS --target=$FFBUILD_TOOLCHAIN -Wno-unused-command-line-argument"
+    local CLANG_LDFLAGS="$CLEAN_LDFLAGS --target=$FFBUILD_TOOLCHAIN --gcc-toolchain=/opt/ct-ng -fuse-ld=lld"
 
     if [[ $TARGET == win* ]]; then
         # Override sysroot for MinGW and add GCC libgcc path
@@ -55,7 +55,7 @@ ffbuild_dockerbuild() {
     export LDFLAGS="$CLANG_LDFLAGS"
 
     cmake -DCMAKE_TOOLCHAIN_FILE="$PWD/clang_toolchain.cmake" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" \
-        -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_APPS=OFF -DENABLE_AVX512=ON -DSVT_AV1_LTO=OFF ..
+        -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_APPS=OFF -DENABLE_AVX512=ON -DSVT_AV1_LTO=ON ..
     make -j$(nproc)
     make install DESTDIR="$FFBUILD_DESTDIR"
 }
